@@ -1,0 +1,11 @@
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(DEPEND_PROP "Dependencies/penumbra")
+
+add_subdirectory(tracy)
+set_property(TARGET TracyClient PROPERTY FOLDER "${DEPEND_PROP}")
+add_subdirectory(imgui)
+set_property(TARGET ImGui PROPERTY FOLDER "${DEPEND_PROP}")
+add_subdirectory(glm)
+set_property(TARGET glm PROPERTY FOLDER "${DEPEND_PROP}")
+add_subdirectory(spdlog)
+set_property(TARGET spdlog PROPERTY FOLDER "${DEPEND_PROP}")

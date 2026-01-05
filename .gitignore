@@ -1,0 +1,50 @@
+# Visual Studio-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj
+*.vcxproj.filters
+
+# Premake-generated files
+*.sln
+
+# Build results
+[Bb]uild/
+[Oo]bj/
+*.ipdb
+*.pdb
+*.ilk
+*.tlog
+*.log
+
+# Visual Studio cache files
+.vs/
+*.VC.db
+*.VC.VC.opendb
+
+# Python cache files
+*.pyc
+
+# Temporary files
+*.tmp
+*.cachefile
+*.pidb
+
+# Backup & report files
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.*
+*.rptproj.bak
+
+# Miscellaneous IDE-specific files
+*.sdf
+*.aps
+*.opendb
+*.opensdf
+
+# Remove unnecessary cache folders
+.localhistory/
+.vshistory/
+.mfractor/
