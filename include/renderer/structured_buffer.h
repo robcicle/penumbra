@@ -26,7 +26,9 @@ namespace penumbra
         void UnbindSRV(ShaderType stage = ShaderType::SHADER_TYPE_NONE);
         void BindUAV();
         void UnbindUAV();
+
         void SetData(const void* pData, uint32_t count);
+		void GetData(void* pOut, uint32_t count);
 
 		bool HasCounter() const { return m_Spec.m_bUseCounter; }
 		void ResetUAVCounter(uint32_t value);
@@ -34,6 +36,7 @@ namespace penumbra
         StructuredBufferSpecification_t m_Spec;
 
         ComPtr<ID3D11Buffer> m_spBuffer;
+        ComPtr<ID3D11Buffer> m_spReadbackBuffer;
         ComPtr<ID3D11ShaderResourceView> m_spSRV;
         ComPtr<ID3D11UnorderedAccessView> m_spUAV;
 

@@ -119,6 +119,21 @@ namespace penumbra
                     PENUMBRA_CORE_ASSERT(SUCCEEDED(hr), "StructuredBuffer: Failed to create UAV!");
                 });
         }
+
+        D3D11_BUFFER_DESC rbDesc{};
+        rbDesc.ByteWidth = nByteWidth;
+        rbDesc.Usage = D3D11_USAGE_STAGING;
+        rbDesc.BindFlags = 0;
+        rbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        rbDesc.MiscFlags = 0;
+        rbDesc.StructureByteStride = 0; // Irrelevant for staging
+
+        CRenderer::Submit([this, spDevice, rbDesc]()
+            {
+                PENUMBRA_PROFILE_SCOPE("ID3D11Device::CreateBuffer (Readback)");
+                HRESULT hr = spDevice->CreateBuffer(&rbDesc, nullptr, m_spReadbackBuffer.GetAddressOf());
+                PENUMBRA_CORE_ASSERT(SUCCEEDED(hr), "StructuredBuffer: Failed to create readback staging buffer!");
+            });
     }
 
     void CStructuredBuffer::BindSRV(ShaderType stage)
@@ -284,6 +299,46 @@ namespace penumbra
                     // Unmap the buffer
                     PENUMBRA_PROFILE_SCOPE("ID3D11DeviceContext::Unmap");
                     m_spContext->Unmap(m_spBuffer.Get(), 0);
+                }
+            });
+    }
+
+    void CStructuredBuffer::GetData(void* pOut, uint32_t count)
+    {
+        PENUMBRA_PROFILE_FUNC();
+        PENUMBRA_CORE_ASSERT(pOut, "StructuredBuffer::GetData: pOut is null!");
+
+        const uint32_t bytesToRead = count * m_Spec.m_nElementSize;
+
+        CRenderer::Submit([this, pOut, bytesToRead]()
+            {
+                // Copy GPU buffer -> staging
+                {
+                    PENUMBRA_PROFILE_SCOPE("ID3D11DeviceContext::CopyResource (Readback)");
+                    m_spContext->CopyResource(m_spReadbackBuffer.Get(), m_spBuffer.Get());
+                }
+
+                // Map staging for CPU read
+                D3D11_MAPPED_SUBRESOURCE mapped{};
+                {
+                    PENUMBRA_PROFILE_SCOPE("ID3D11DeviceContext::Map (Readback)");
+                    HRESULT hr = m_spContext->Map(
+                        m_spReadbackBuffer.Get(),
+                        0,
+                        D3D11_MAP_READ,
+                        0,
+                        &mapped
+                    );
+                    PENUMBRA_CORE_ASSERT(SUCCEEDED(hr), "StructuredBuffer::GetData: Failed to map readback buffer!");
+                }
+
+                // Copy out
+                memcpy(pOut, mapped.pData, bytesToRead);
+
+                // Unmap
+                {
+                    PENUMBRA_PROFILE_SCOPE("ID3D11DeviceContext::Unmap (Readback)");
+                    m_spContext->Unmap(m_spReadbackBuffer.Get(), 0);
                 }
             });
     }
