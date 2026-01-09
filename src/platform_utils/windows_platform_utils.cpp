@@ -29,7 +29,7 @@ namespace penumbra
         }
     }
 
-	float CPlatformUtils::GetTime()
+	double CPlatformUtils::GetTime()
 	{
 		PENUMBRA_PROFILE_FUNC();
 
@@ -41,7 +41,7 @@ namespace penumbra
 		LARGE_INTEGER currentTime;
 		QueryPerformanceCounter(&currentTime);
 		// Return time in seconds
-		return static_cast<float>(currentTime.QuadPart / static_cast<double>(s_Frequency.QuadPart));
+		return static_cast<double>(currentTime.QuadPart) / static_cast<double>(s_Frequency.QuadPart);
 	}
 
     std::filesystem::path CPlatformUtils::OpenFileDialog(const char* filter)

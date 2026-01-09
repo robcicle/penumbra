@@ -84,21 +84,30 @@ namespace penumbra
     {;
 		PENUMBRA_PROFILE_FUNC();  // Main application loop
 
-        float nextFrameTime = CPlatformUtils::GetTime();
+		// Initialize timing
+        double nextFrameTime = CPlatformUtils::GetTime();
 
         while (m_bRunning) {
             PENUMBRA_PROFILE_SCOPE(kFrameProfileName);
 
-            float currentTime = CPlatformUtils::GetTime();
-            float deltaTime = currentTime - m_flLastFrameTime;
+			// Mark frame start time
+            const double frameStartTime = CPlatformUtils::GetTime();
+
+			// Calculate delta time
+            const double currentTime = CPlatformUtils::GetTime();
+            const float deltaTime = static_cast<float>(currentTime - m_flLastFrameTime);
+			// Update last frame time
             m_flLastFrameTime = currentTime;
 
+			// Execute any functions queued for the main thread
             ExecuteMainThreadQueue();
 
             if (!m_bMinimized) {
+				// Bind and clear the default framebuffer
                 CRenderCommand::Bind();
                 CRenderCommand::Clear();
                 {
+					// Update all layers
                     PENUMBRA_PROFILE_SCOPE(kLayerStackUpdateName);
                     CTimer timer;
 
@@ -106,29 +115,44 @@ namespace penumbra
                         layer->OnUpdate(deltaTime);
                     }
 
-					m_Statistics.m_flCpuTime = timer.ElapsedMillis();
+					m_Statistics.m_flCPUUpdateTime = timer.ElapsedMillis();
                 }
 
+				// Render ImGui on top of everything
+                // The actual rendering commands will be submitted to the
+				// RenderQueue and executed later
                 RenderImGui();
 
                 {
+					// Render all submitted render commands
                     CTimer timer;
                     CRenderer::WaitAndRender();
-					m_Statistics.m_flGpuTime = timer.ElapsedMillis();
+					m_Statistics.m_flGPURenderTime = timer.ElapsedMillis();
                 }
             }
 
+			// Update the window (swap buffers and poll events)
             m_spWindow->OnUpdate();
 
+			// Frame rate capping
             if (m_flTargetFrameTime > 0.0f) {
+				// Calculate next frame time
                 nextFrameTime += m_flTargetFrameTime;
-			    currentTime = CPlatformUtils::GetTime();
 
-                float sleepDuration = nextFrameTime - currentTime;
-                if (sleepDuration > 0.0f) {
-                    SleepPrecise(sleepDuration);
-                }
+				// Sleep until the next frame time
+			    const double now = CPlatformUtils::GetTime();
+                const double sleepDuration = nextFrameTime - now;
+                
+				// If we're running behind, skip sleeping
+                if (sleepDuration > 0.0f) 
+                    SleepPrecise(static_cast<float>(sleepDuration));
+                else
+					nextFrameTime = now;
             }
+
+			// Calculate frame time
+            const double frameEndTime = CPlatformUtils::GetTime();
+            m_Statistics.m_flFrameTime = static_cast<float>((frameEndTime - frameStartTime) * 1000.0);
 
             PENUMBRA_PROFILE_MARK_FRAME;  // Marks frame end for profiler
         }

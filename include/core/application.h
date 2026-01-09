@@ -76,8 +76,9 @@ namespace penumbra
 	public:
 		struct Statistics_t
 		{
-			float m_flCpuTime = 0.0f;
-			float m_flGpuTime = 0.0f;
+			float m_flFrameTime		= 0.0f;
+			float m_flCPUUpdateTime = 0.0f;
+			float m_flGPURenderTime = 0.0f;
 		};
 
 		Statistics_t& GetStatistics() { return m_Statistics; }
@@ -95,7 +96,7 @@ namespace penumbra
 		bool m_bRunning = true;
 		bool m_bMinimized = false;
 		CLayerStack m_LayerStack;
-		float m_flLastFrameTime = 0.0f;
+		double m_flLastFrameTime = 0.0f;
 		float m_flTargetFrameTime = 0.0f;
 		Statistics_t m_Statistics;
 
