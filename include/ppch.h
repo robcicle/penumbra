@@ -65,4 +65,5 @@
 using Microsoft::WRL::ComPtr;
 #include <d3d11_2.h>
 #include <dxgi1_2.h>
+#include <dxgi1_4.h>
 #include <d3dcompiler.h>

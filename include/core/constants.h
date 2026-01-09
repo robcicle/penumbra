@@ -43,13 +43,15 @@ namespace penumbra
 
 	// GraphicsContext constants
 	constexpr const char* kGraphicsCreateDXGIFactoryProfileName = "CreateDXGIFactory";
-	constexpr uint32_t kVendorIdNVIDIA	= 0x10DE;
-	constexpr uint32_t kVendorIdAMD		= 0x1002;
-	constexpr uint32_t kVendorIdIntel	= 0x8086;
+	constexpr uint32_t kVendorIdNVIDIA	= 0x10DE;	// NVIDIA Vendor ID
+	constexpr uint32_t kVendorIdAMD		= 0x1002;	// AMD Vendor ID
+	constexpr uint32_t kVendorIdIntel	= 0x8086;	// Intel Vendor ID
 	constexpr const char* kVendorNVIDIA		= "NVIDIA Corporation";
 	constexpr const char* kVendorAMD		= "AMD";
 	constexpr const char* kVendorIntel		= "Intel";
 	constexpr const char* kVendorUnknown	= "UnknownVendor";
+	constexpr size_t kOneMiB = 1024ull * 1024ull;	// One MiB in bytes
+	constexpr uint32_t kQPCIntervalDivisor = 10;	// Divisor for converting QPC to milliseconds
 
 	// Mesh constants
 	constexpr const char* kLayoutPositionSemantic = "POSITION";

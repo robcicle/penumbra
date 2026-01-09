@@ -4,6 +4,8 @@
 #include "renderer/renderer.h"
 
 #include <dxgi1_5.h>
+#include <core/timer.h>
+#include <core/application.h>
 
 namespace penumbra
 {
@@ -85,7 +87,20 @@ namespace penumbra
 			PENUMBRA_CORE_INFO("DirectX 11 Info:");
 			PENUMBRA_CORE_INFO("  Vendor: {}", Utils::VendorName(desc.VendorId));
 			PENUMBRA_CORE_INFO("  Renderer: {}", Utils::WStringToUTF8(desc.Description));
-			PENUMBRA_CORE_INFO("  Video Memory: {} MB", desc.DedicatedVideoMemory / (1024 * 1024));
+			PENUMBRA_CORE_INFO("  Video Memory: {} MB", desc.DedicatedVideoMemory / kOneMiB);
+		}
+
+		m_bGpuMemoryQuerySupported = false;
+
+		// Check for IDXGIAdapter3 support for GPU memory queries
+		{
+			if (SUCCEEDED(m_spDXGIAdapter.As(&m_spDXGIAdapter3))) {
+				m_bGpuMemoryQuerySupported = true;
+			}
+
+			LARGE_INTEGER freq{};
+			if (QueryPerformanceFrequency(&freq))
+				m_nQPCFreq = static_cast<uint64_t>(freq.QuadPart);
 		}
 
 		// Device and Context setup.
@@ -136,7 +151,46 @@ namespace penumbra
 		// Present the swap chain
 		{
 			PENUMBRA_PROFILE_SCOPE("IDXGISwapChain::Present");
+			// Include the time taken for the GPU to present in the stats
+			CTimer timer;
 			m_spSwapChain->Present(m_nSwapInterval, flags);
+
+			// Update GPU timing stats
+			CApplication::Statistics_t& stats = CApplication::Get().GetStatistics();
+			stats.m_flGPURenderTime += timer.ElapsedMillis();
+		}
+	}
+
+	void CGraphicsContext::UpdateGPUMemoryInfo()
+	{
+		if (!m_bGpuMemoryQuerySupported || m_spDXGIAdapter3 == nullptr)
+			return;
+
+		if (m_nQPCFreq != 0) {
+			LARGE_INTEGER now{};
+			QueryPerformanceCounter(&now);
+
+			const uint64_t nowQpc = static_cast<uint64_t>(now.QuadPart);
+			const uint64_t intervalQpc = m_nQPCFreq / kQPCIntervalDivisor;
+
+			if (m_nLastGPUMemQueryQPC != 0 && (nowQpc - m_nLastGPUMemQueryQPC) < intervalQpc)
+				return;
+
+			m_nLastGPUMemQueryQPC = nowQpc;
+		}
+
+		DXGI_QUERY_VIDEO_MEMORY_INFO local{};
+		if (SUCCEEDED(m_spDXGIAdapter3->QueryVideoMemoryInfo(
+			0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &local))) {
+			m_GPUMemoryInfo.m_nLocalUsedBytes = local.CurrentUsage;
+			m_GPUMemoryInfo.m_nLocalBudgetBytes = local.Budget;
+		}
+
+		DXGI_QUERY_VIDEO_MEMORY_INFO nonLocal{};
+		if (SUCCEEDED(m_spDXGIAdapter3->QueryVideoMemoryInfo(
+			0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &nonLocal))) {
+			m_GPUMemoryInfo.m_nNonLocalUsedBytes = nonLocal.CurrentUsage;
+			m_GPUMemoryInfo.m_nNonLocalBudgetBytes = nonLocal.Budget;
 		}
 	}
 }
