@@ -3,7 +3,7 @@
 namespace penumbra 
 {
 #ifndef PENUMBRA_ENABLE_PROFILER
-	#define PENUMBRA_ENABLE_PROFILER 1
+	#define PENUMBRA_ENABLE_PROFILER 0
 #endif
 
 #if PENUMBRA_ENABLE_PROFILER

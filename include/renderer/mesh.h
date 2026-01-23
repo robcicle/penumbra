@@ -37,7 +37,6 @@ namespace penumbra
         std::string m_NodeName, m_MeshName;
 
 		Ref<CTexture> m_spAlbedoTexture;
-		Ref<CTexture> m_spSpecularTexture;
     };
 
     class CMesh
