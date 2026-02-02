@@ -127,11 +127,11 @@ namespace penumbra
 
 		// Sampler State
 		D3D11_SAMPLER_DESC sampler{};
-		sampler.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;	// Linear filtering for minification and magnification, point filtering for mipmaps
+		sampler.Filter = D3D11_FILTER_ANISOTROPIC;	// Linear filtering for minification and magnification, point filtering for mipmaps
 		// Wrap addressing mode for U, V, and W coordinates
 		sampler.AddressU = sampler.AddressV = sampler.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler.ComparisonFunc = D3D11_COMPARISON_ALWAYS;	// Comparison function always passes
-		sampler.MaxAnisotropy = 1;							// No anisotropic filtering
+		sampler.MaxAnisotropy = 16;							// No anisotropic filtering
 		sampler.MaxLOD = D3D11_FLOAT32_MAX;					// Use the maximum level of detail
 
 		CRenderer::Submit([this, sampler]()

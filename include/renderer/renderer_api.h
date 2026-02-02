@@ -29,7 +29,7 @@ namespace penumbra
 		bool m_bFrontCounterClockwise = false;
 		bool m_bDepthClipEnable = true;
 		bool m_bScissorEnable = false;
-		bool m_bMultisampleEnable = false;
+		bool m_bMultisampleEnable = true;
 		bool m_bAntialiasedLineEnable = false;
 
 		int32_t m_nDepthBias = 0;
