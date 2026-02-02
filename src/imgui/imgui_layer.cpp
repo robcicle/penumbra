@@ -21,6 +21,8 @@ namespace penumbra
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 		HWND hwnd = CApplication::Get().GetWindow().GetHWND();
@@ -74,6 +76,8 @@ namespace penumbra
 		
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
 	}
 
 	uint32_t CImGuiLayer::GetActiveWidgetID() const
