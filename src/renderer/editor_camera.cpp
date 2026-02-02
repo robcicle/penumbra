@@ -91,7 +91,6 @@ namespace penumbra
 
 		CEventDispatcher dispatcher(e);
 		dispatcher.Dispatch<CMouseScrolledEvent>(PENUMBRA_BIND_EVENT_FN(CEditorCamera::OnMouseScroll));
-		dispatcher.Dispatch<CWindowResizeEvent>(PENUMBRA_BIND_EVENT_FN(CEditorCamera::OnWindowResize));
 	}
 
 	bool CEditorCamera::OnMouseScroll(CMouseScrolledEvent& e)
@@ -110,18 +109,6 @@ namespace penumbra
 			MouseZoom(delta);
 			UpdateView();
 		}
-		return false;
-	}
-
-	bool CEditorCamera::OnWindowResize(CWindowResizeEvent& e)
-	{
-		PENUMBRA_PROFILE_FUNC();
-
-		float width = (float)e.GetWidth();
-		float height = (float)e.GetHeight();
-		if (width == 0.0f || height == 0.0f)
-			return false;
-		SetViewportSize((float)e.GetWidth(), (float)e.GetHeight());
 		return false;
 	}
 

@@ -17,6 +17,7 @@ namespace penumbra
 		void OnEvent(CEvent& e);
 
 		inline void SetViewportSize(float flWidth, float flHeight) { m_flViewportWidth = flWidth; m_flViewportHeight = flHeight; UpdateProjection(); }
+		glm::vec2 GetViewportSize() const { return { m_flViewportWidth, m_flViewportHeight }; }
 
 		const glm::mat4& GetViewMatrix() const { return m_matViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_matProjection * m_matViewMatrix; }
