@@ -360,7 +360,6 @@ namespace penumbra
 
 		PENUMBRA_CORE_ASSERT(nAttachmentIndex < m_vspSRVs.size(), "Invalid attachment index!");
 
-		int nPixelValue = 0;
 		HRESULT hr = S_OK;
 
 		const ComPtr<ID3D11Texture2D>& spSrcTexture = m_vspTextures[nAttachmentIndex];
@@ -401,10 +400,9 @@ namespace penumbra
 		}
 
 		// Calculate pixel position and read value
-		uint8_t* pData = static_cast<uint8_t*>(mapped.pData);
-		const uint32_t nBPP = Utils::GetFormatBPP(format);	// Bytes per pixel
-		nPixelValue = *reinterpret_cast<int*>(pData + (nY * mapped.RowPitch) + (nX * nBPP));
-		delete[] pData;
+		int* pixelData = (int*)mapped.pData;
+		int rowPitch = mapped.RowPitch / sizeof(int);
+		int pixelValue = pixelData[nY * rowPitch + nX];
 
 		// Unmap the staging texture
 		{
@@ -412,7 +410,7 @@ namespace penumbra
 			m_spContext->Unmap(spStaging.Get(), 0);
 		}
 
-		return nPixelValue;
+		return pixelValue;
 	}
 
 	void CFramebuffer::BindTexture(uint32_t nAttachmentIndex, uint32_t nSlot) const
@@ -487,9 +485,6 @@ namespace penumbra
 	void CFramebuffer::ClearAttachment(uint32_t nAttachmentIndex, int nValue) const
 	{
 		PENUMBRA_PROFILE_FUNC();
-
-		// Validate attachment index
-		PENUMBRA_CORE_ASSERT(nAttachmentIndex < m_vspTextures.size(), "D3D11Framebuffer: Attachment index out of range!");
 
 		// Check if it's a color or depth attachment
 		if (nAttachmentIndex >= m_vspRTVs.size() && !m_spDepthDSV)
