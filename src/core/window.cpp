@@ -293,6 +293,9 @@ namespace penumbra
 		{
 			CWindowCloseEvent e;
 			data.m_pfnEventCallback(e);
+
+			if (e.m_bHandled)
+				return 0;
 			break;
 		}
 		case WM_SIZE:

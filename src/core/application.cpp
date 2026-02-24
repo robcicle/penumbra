@@ -207,7 +207,7 @@ namespace penumbra
         PENUMBRA_PROFILE_FUNC();
 
         m_bRunning = false;
-        return true;
+        return false;
     }
 
     bool CApplication::OnWindowResize(CWindowResizeEvent& e)

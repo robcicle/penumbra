@@ -9,5 +9,6 @@ namespace penumbra
 
 		static std::filesystem::path OpenFileDialog(const char* filter);
 		static std::filesystem::path SaveFileDialog(const char* filter);
+		static void ShowMessageBox(const char* caption, const char* message, UINT flags);
 	};
 }

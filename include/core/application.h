@@ -57,6 +57,7 @@ namespace penumbra
 		void Run();
 		void Close();
 		
+		bool& IsRunning() { return m_bRunning; }
 		CImGuiLayer* GetImGuiLayer() { return m_pImGuiLayer; }
 
 		static CApplication& Get() { return *s_pInstance; }

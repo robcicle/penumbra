@@ -99,4 +99,9 @@ namespace penumbra
 		// If cancelled or error, return empty path
         return "";
     }
+
+	void CPlatformUtils::ShowMessageBox(const char* caption, const char* message, UINT flags)
+	{
+		MessageBoxA(nullptr, message, caption, flags);
+	}
 }

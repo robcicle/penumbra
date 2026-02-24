@@ -21,17 +21,6 @@ namespace penumbra
 		uint32_t m_V1, m_V2, m_V3;
     };
 
-    struct EmbeddedMaterial_t
-    {
-        std::string m_Name;
-        glm::vec3 m_v3AlbedoColor = glm::vec3(1.0f);
-        glm::vec3 m_v3SpecularColor = glm::vec3(1.0f);
-        float m_fRoughness = 0.5f;
-        float m_fMetallic = 0.0f;
-		// Add more material properties as needed
-		std::string m_AlbedoTexturePath;
-    };
-
     class CSubmesh
     {
     public:
@@ -47,8 +36,7 @@ namespace penumbra
 
         std::string m_NodeName, m_MeshName;
 
-		EmbeddedMaterial_t m_Material;
-		bool m_bValidMaterial = false;
+		Ref<CTexture> m_spAlbedoTexture;
     };
 
     class CMesh
