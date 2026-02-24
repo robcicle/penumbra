@@ -404,7 +404,6 @@ namespace penumbra
 		int rowPitch = mapped.RowPitch / sizeof(int);
 		int pixelValue = pixelData[nY * rowPitch + nX];
 
-
 		// Unmap the staging texture
 		{
 			PENUMBRA_PROFILE_SCOPE("ID3D11DeviceContext::Unmap");
@@ -486,12 +485,6 @@ namespace penumbra
 	void CFramebuffer::ClearAttachment(uint32_t nAttachmentIndex, int nValue) const
 	{
 		PENUMBRA_PROFILE_FUNC();
-
-		// Validate attachment index
-		// Note: I've temporarily commented this out, the check below will early exit anyway
-		// and this can almost false flag up when we are first starting up the Application or
-		// when we attach a layer and the render thread hasn't had the chance to run yet.
-		//PENUMBRA_CORE_ASSERT(nAttachmentIndex < m_vspTextures.size(), "D3D11Framebuffer: Attachment index out of range!");
 
 		// Check if it's a color or depth attachment
 		if (nAttachmentIndex >= m_vspRTVs.size() && !m_spDepthDSV)
